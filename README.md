@@ -14,6 +14,9 @@ Dementia is one of the most common neurodegenerative disorders among the elderly
 
 Also known as major neurocognitive disorder, dementia occurs when brain cells are damaged or lost at a faster rate than normal as a person ages. This can severely affect brain function across many areas such as memory, thinking, behavior, and the ability to care for oneself, and can negatively impact the quality of life of patients and family members.
 
+This work utilizes data from https://dementiadiaries.org/, and we appreciate the resources provided by the website. This work is for non-commercial purposes only and does not involve any commercial activities or profit-making endeavors.
+
+
 ## Setup Instructions
 
 ### 1. Install Dependencies
