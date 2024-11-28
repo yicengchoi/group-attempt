@@ -1,0 +1,4 @@
+requests>=2.31.0
+tkinter
+Pillow>=10.1.0
+
