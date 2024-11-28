@@ -5,6 +5,8 @@ import requests
 import json
 import tkinter.font as tkfont
 import os
+from pygame import mixer
+import pygame
 
 class TarotApp:
     def __init__(self, root):
@@ -17,6 +19,15 @@ class TarotApp:
         self.selected_images = {}  # 存储每个主题最后一次选择的卡牌索引
         self.current_selected_card = None  # 当前被选择的卡牌
         self.detail_window_open = False  # 标记是否有卡牌详细信息弹窗打开
+        self.is_playing = False
+        self.volume = 0.5  # 默认音量
+
+        # 初始化音乐播放器
+        pygame.mixer.init()
+        self.setup_background_music()
+
+        # 创建音量控制按钮
+        self.create_volume_control()
 
         # 每个主题名称
         self.themes = ["Emotions", "Forgot", "Wish"]
@@ -59,7 +70,7 @@ class TarotApp:
     def create_page(self, frame, theme, back_image_path):
         # 创建标题
         title_label = tk.Label(
-            frame, text="Memory Reader", font=("Arial", 24, "bold"), pady=20
+            frame, text="Memory Reader", font=("Calibri", 24, "bold"), pady=20
         )
         title_label.pack()
 
@@ -68,7 +79,7 @@ class TarotApp:
         theme_frame.pack(pady=10, anchor="w", fill="x")
 
         theme_label = tk.Label(
-            theme_frame, text=f"Theme: {theme}", font=("Arial", 18), anchor="w"
+            theme_frame, text=f"Theme: {theme}", font=("Calibri", 18), anchor="w"
         )
         theme_label.pack(side="left", padx=20)
 
@@ -141,13 +152,13 @@ class TarotApp:
     def create_summary_page(self, frame):
         """创建选择摘要页面"""
         title_label = tk.Label(
-            frame, text="Your Selected Cards", font=("Arial", 24, "bold"), pady=20
+            frame, text="Your Selected Cards", font=("Calibri", 24, "bold"), pady=20
         )
         title_label.pack()
 
         # 显示选择结果
         self.summary_label = tk.Label(
-            frame, text="", font=("Arial", 18), justify="left", pady=20
+            frame, text="", font=("Calibri", 18), justify="left", pady=20
         )
         self.summary_label.pack()
 
@@ -159,7 +170,7 @@ class TarotApp:
         prophecy_button = tk.Button(
             button_frame,
             text="Prophecy of Memory",
-            font=("Arial", 14),
+            font=("Calibri", 14),
             command=self.show_prophecy,
         )
         prophecy_button.pack(side="left", padx=10)
@@ -168,7 +179,7 @@ class TarotApp:
         back_button = tk.Button(
             button_frame,
             text="Restart",
-            font=("Arial", 14),
+            font=("Calibri", 14),
             command=self.restart,
         )
         back_button.pack(side="left", padx=10)
@@ -217,7 +228,7 @@ class TarotApp:
             print(f"Quote: {quote}")  # Debug line
 
             text_label = tk.Label(
-                detail_window, text=quote, font=("Arial", 16), wraplength=350
+                detail_window, text=quote, font=("Calibri", 16), wraplength=350
             )
             text_label.pack()
 
@@ -474,6 +485,60 @@ class TarotApp:
         except Exception as e:
             print(f"Error showing prophecy: {e}")
 
+    def setup_background_music(self):
+        """设置背景音乐"""
+        try:
+            music_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'audio', 'background.mp3')
+            pygame.mixer.music.load(music_path)
+            pygame.mixer.music.set_volume(self.volume)
+            pygame.mixer.music.play(-1)  # -1表示循环播放
+            self.is_playing = True
+        except Exception as e:
+            print(f"无法加载背景音乐: {e}")
+
+    def create_volume_control(self):
+        """创建音量控制按钮"""
+        # 创建一个框架，放在主窗口的左上角
+        self.volume_frame = tk.Frame(self.root, bg='white')  # 添加背景色以便于调试
+        self.volume_frame.pack(side="top", anchor="nw", padx=10, pady=10)
+        
+        # 音量按钮
+        self.volume_button = tk.Button(
+            self.volume_frame,
+            text="🔊",
+            font=("Calibri", 12),
+            command=self.toggle_music,
+            width=2,  # 设置按钮宽度
+            height=1  # 设置按钮高度
+        )
+        self.volume_button.pack(side="left", padx=5)
+        
+        # 音量滑块
+        self.volume_slider = tk.Scale(
+            self.volume_frame,
+            from_=0,
+            to=100,
+            orient="horizontal",
+            length=100,  # 设置滑块长度
+            command=self.change_volume
+        )
+        self.volume_slider.set(self.volume * 100)
+        self.volume_slider.pack(side="left", padx=5)
+
+    def toggle_music(self):
+        """切换音乐播放状态"""
+        if self.is_playing:
+            pygame.mixer.music.pause()
+            self.volume_button.config(text="🔈")
+        else:
+            pygame.mixer.music.unpause()
+            self.volume_button.config(text="🔊")
+        self.is_playing = not self.is_playing
+
+    def change_volume(self, value):
+        """调整音量"""
+        self.volume = float(value) / 100
+        pygame.mixer.music.set_volume(self.volume)
 
 def main():
     root = tk.Tk()
