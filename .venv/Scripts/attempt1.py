@@ -33,8 +33,11 @@ class TarotApp:
             "theme3_back.jpg",
         ]  # 背面图大图路径
 
-        # 设置图片目录路径
-        self.image_directory = r'C:\Users\86181\Desktop\001126forgroup\001126forgroup\group attempt_11252050\images\cards'
+        # 获取当前脚本文件所在目录
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # 设置图片目录的相对路径
+        self.image_directory = os.path.join(base_dir, '..', '..', 'images', 'cards')
 
         # 创建页面容器
         self.pages = []
