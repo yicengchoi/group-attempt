@@ -1,4 +1,18 @@
-# Memory Reader
+#  Memory and the Past: A Tarot Multimedia Experience
+
+### Concept:
+
+Create an interactive web page UI in the form of tarot cards, with content themes related to Dementia patients.
+
+### About
+
+Epidemiology
+
+Dementia is one of the most common neurodegenerative disorders among the elderly, though there are also a small number of middle-aged patients. According to information from the Department of Health, one in 10 people aged 70 or above in Hong Kong suffers from dementia, with the rate increasing to one in three among those aged 85 or above. It is estimated that by 2036, there will be about 280,000 patients with dementia in Hong Kong.
+
+### What is Dementia?
+
+Also known as major neurocognitive disorder, dementia occurs when brain cells are damaged or lost at a faster rate than normal as a person ages. This can severely affect brain function across many areas such as memory, thinking, behavior, and the ability to care for oneself, and can negatively impact the quality of life of patients and family members.
 
 ## Setup Instructions
 
