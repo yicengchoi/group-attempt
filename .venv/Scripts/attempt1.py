@@ -19,15 +19,7 @@ class TarotApp:
         self.selected_images = {}  # 存储每个主题最后一次选择的卡牌索引
         self.current_selected_card = None  # 当前被选择的卡牌
         self.detail_window_open = False  # 标记是否有卡牌详细信息弹窗打开
-        self.is_playing = False
-        self.volume = 0.5  # 默认音量
-
-        # 初始化音乐播放器
-        pygame.mixer.init()
-        self.setup_background_music()
-
-        # 创建音量控制按钮
-        self.create_volume_control()
+        self.is_muted = False  # 静音状态变量
 
         # 每个主题名称
         self.themes = ["Emotions", "Forgot", "Wish"]
@@ -39,9 +31,9 @@ class TarotApp:
             "theme3_front.jpg",
         ]  # 正面图片路径
         self.back_images = [
-            "theme1_back.jpg",
-            "theme2_back.jpg",
-            "theme3_back.jpg",
+            "theme1_back.png",
+            "theme2_back.png",
+            "theme3_back.png",
         ]  # 背面图大图路径
 
         # 获取当前脚本文件所在目录
@@ -67,46 +59,108 @@ class TarotApp:
         # 显示第一页
         self.pages[0].pack(fill="both", expand=True)
 
+        # 初始化 pygame 音乐模块
+        pygame.mixer.init()
+        self.play_background_music()
+
+    def play_background_music(self):
+        # 加载并播放背景音乐
+        pygame.mixer.music.load(r"C:\Users\86181\Desktop\group-attempt\audio/background.mp3")
+        pygame.mixer.music.play(-1)  # -1 表示循环播放
+
     def create_page(self, frame, theme, back_image_path):
-        # 创建标题
-        title_label = tk.Label(
-            frame, text="Memory Reader", font=("Calibri", 24, "bold"), pady=20
+        # 设置框架背景为黑色
+        frame.config(bg='black')
+
+        # 加载并显标题和主题的图片
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        header_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'memoryreader.png')
+        header_image = Image.open(header_image_path)
+        header_image_resized = header_image.resize((380, 65), Image.LANCZOS)
+        header_image_tk = ImageTk.PhotoImage(header_image_resized)
+
+        header_label = tk.Label(
+            frame, image=header_image_tk, bg='black'  # 设置标签背景为黑色
         )
-        title_label.pack()
+        header_label.image = header_image_tk
+        header_label.pack(pady=20)
+         # 创建一个新的框架用于放置按钮
+        button_frame = tk.Frame(frame, bg='black')
+        button_frame.pack(pady=0, fill='x', expand=True)
 
-        # 显示主题和下一页按钮
-        theme_frame = tk.Frame(frame)
-        theme_frame.pack(pady=10, anchor="w", fill="x")
+        # 加载并缩小下一页按钮图片
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        next_button_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'next_button.png')
+        original_image = Image.open(next_button_image_path)
+        resized_image = original_image.resize((80, 35), Image.LANCZOS)
+        next_button_image = ImageTk.PhotoImage(resized_image)
 
-        theme_label = tk.Label(
-            theme_frame, text=f"Theme: {theme}", font=("Calibri", 18), anchor="w"
-        )
-        theme_label.pack(side="left", padx=20)
-
+        # 创建带图片的 Next 按钮
         next_button = tk.Button(
-            theme_frame,
-            text="Next",
-            font=("Arial", 14),
-            command=self.next_page,
+            button_frame, image=next_button_image, command=self.next_page, bg='black', borderwidth=0
         )
-        next_button.pack(side="right", padx=20)
+        next_button.image = next_button_image  # 防止图片被垃圾回收
+        next_button.pack(side=tk.RIGHT, padx=80, pady=3)
+
+        # 加载并显示静音按钮图
+        try:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            mute_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'mute.png')
+            mute_image = Image.open(mute_image_path)
+            mute_image_resized = mute_image.resize((35, 35), Image.LANCZOS)
+            mute_image_tk = ImageTk.PhotoImage(mute_image_resized)
+
+            # 创建带图片的静音按钮
+            mute_button = tk.Button(
+                button_frame, image=mute_image_tk, command=self.toggle_mute, bg='black', borderwidth=0
+            )
+            mute_button.image = mute_image_tk  # 防止图片被垃圾回收
+            mute_button.pack(side=tk.RIGHT, padx=5, pady=3)
+        except Exception as e:
+            print(f"Error loading mute image: {e}")
+
+        # 插入新的线条图片
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        line_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'line.png')
+        line_image = Image.open(line_image_path)
+        line_image_resized = line_image.resize((1220, 3), Image.LANCZOS)
+        line_image_tk = ImageTk.PhotoImage(line_image_resized)
+
+        line_label = tk.Label(
+            frame, image=line_image_tk, bg='black'
+        )
+        line_label.image = line_image_tk
+        line_label.pack(pady=0, fill='x', expand=True)
+
+        # 插入新的选择图片
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        choose_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'choose.png')
+        choose_image = Image.open(choose_image_path)
+        choose_image_resized = choose_image.resize((450, 15), Image.LANCZOS)
+        choose_image_tk = ImageTk.PhotoImage(choose_image_resized)
+
+        choose_label = tk.Label(
+            frame, image=choose_image_tk, bg='black'
+        )
+        choose_label.image = choose_image_tk
+        choose_label.pack(pady=0)
+
+       
 
         # 创建卡牌网格
-        grid_frame = tk.Frame(frame)
-        grid_frame.pack(pady=20)
+        grid_frame = tk.Frame(frame, bg='black')
+        grid_frame.pack(pady=5)
 
         # 加载背面图片并分割
         back_image = Image.open(back_image_path).resize((960, 480))  # 假设为960x480
         card_size = 120  # 单张卡片大小
         back_images = [
-            self.make_rounded_corner(
-                back_image.crop(
-                    (
-                        (i % 8) * card_size,  # 左
-                        (i // 8) * card_size,  # 上
-                        ((i % 8) + 1) * card_size,  # 右
-                        ((i // 8) + 1) * card_size,  # 下
-                    )
+            back_image.crop(
+                (
+                    (i % 8) * card_size,  # 左
+                    (i // 8) * card_size,  # 上
+                    ((i % 8) + 1) * card_size,  # 右
+                    ((i // 8) + 1) * card_size,  # 下
                 )
             )
             for i in range(32)
@@ -121,10 +175,8 @@ class TarotApp:
                 print(f"Image not found: {front_image_path}")
                 continue
 
-            # 加载正面图片
-            front_image = self.make_rounded_corner(
-                Image.open(front_image_path).resize((card_size, card_size))
-            )
+            # 加载正面图
+            front_image = Image.open(front_image_path).resize((card_size, card_size))
             front_photo = ImageTk.PhotoImage(front_image)
             back_photo = ImageTk.PhotoImage(back_images[i])
 
@@ -132,7 +184,7 @@ class TarotApp:
             card_label = tk.Label(
                 grid_frame,
                 image=back_photo,
-                bg="white",
+                bg="black",
                 relief="flat",
                 highlightthickness=0,
                 width=card_size,
@@ -151,37 +203,51 @@ class TarotApp:
 
     def create_summary_page(self, frame):
         """创建选择摘要页面"""
-        title_label = tk.Label(
-            frame, text="Your Selected Cards", font=("Calibri", 24, "bold"), pady=20
-        )
-        title_label.pack()
+        frame.config(bg='black')  # 设置背景为黑色
+
+        # 加载并调整标题图片的尺寸
+        title_image_path = r"images/button/title4.png"
+        title_image = Image.open(title_image_path).resize((550, 80))  # 调整尺寸
+        title_photo = ImageTk.PhotoImage(title_image)
+
+        title_label = tk.Label(frame, image=title_photo, bg='black')
+        title_label.image = title_photo  # 保持引用
+        title_label.pack(pady=20)
 
         # 显示选择结果
-        self.summary_label = tk.Label(
-            frame, text="", font=("Calibri", 18), justify="left", pady=20
-        )
-        self.summary_label.pack()
+        self.summary_frame = tk.Frame(frame, bg='black')  # 用于显示选中卡片的框架
+        self.summary_frame.pack(pady=20)
 
         # 按钮框架
-        button_frame = tk.Frame(frame)
+        button_frame = tk.Frame(frame, bg='black')  # 设置按钮框架背景为黑色
         button_frame.pack(pady=20)
 
-        # 预言按钮
+        # 加载并调整 Prophecy of Memory 按钮图片的尺寸
+        prophecy_image_path = r"images/button/pro.png"
+        prophecy_image = Image.open(prophecy_image_path).resize((230, 35))  # 调整尺寸
+        prophecy_photo = ImageTk.PhotoImage(prophecy_image)
+
         prophecy_button = tk.Button(
             button_frame,
-            text="Prophecy of Memory",
-            font=("Calibri", 14),
+            image=prophecy_photo,
             command=self.show_prophecy,
+            bg='black', borderwidth=0  # 设置按钮背景和边框
         )
+        prophecy_button.image = prophecy_photo  # 保持引用
         prophecy_button.pack(side="left", padx=10)
 
-        # 返回按钮
+        # 加载并调整 Restart 按钮图片的尺寸
+        restart_image_path = r"images/button/restart.png"
+        restart_image = Image.open(restart_image_path).resize((100, 35))  # 调整尺寸
+        restart_photo = ImageTk.PhotoImage(restart_image)
+
         back_button = tk.Button(
             button_frame,
-            text="Restart",
-            font=("Calibri", 14),
+            image=restart_photo,
             command=self.restart,
+            bg='black', borderwidth=0  # 设置按钮背景和边框
         )
+        back_button.image = restart_photo  # 保持引用
         back_button.pack(side="left", padx=10)
 
     def show_card_detail(self, idx, label, front_photo, back_photo, theme):
@@ -206,17 +272,18 @@ class TarotApp:
 
             detail_window = tk.Toplevel(self.root)
             detail_window.title(f"Card Detail - {theme}")
-            detail_window.geometry("400x400")
-            
+            detail_window.geometry("500x600")
+            detail_window.config(bg='black')  # 设置背景为黑色
+
             # 确保窗口总是在最前面
             detail_window.lift()
             detail_window.focus_force()
 
             # 标记弹窗已打开
             self.detail_window_open = True
-            
+
             card_detail_label = tk.Label(
-                detail_window, image=front_photo, bg="white"
+                detail_window, image=front_photo, bg="black"
             )
             card_detail_label.image = front_photo
             card_detail_label.pack(pady=20)
@@ -228,19 +295,32 @@ class TarotApp:
             print(f"Quote: {quote}")  # Debug line
 
             text_label = tk.Label(
-                detail_window, text=quote, font=("Calibri", 16), wraplength=350
+                detail_window, 
+                text=quote, 
+                font=("Courier New", 16, "bold"),  # 设置字体为加粗
+                wraplength=350, 
+                bg='black', 
+                fg='white'
             )
             text_label.pack()
 
+            # 加载并调整 "Seclet" 按钮图片的尺寸
+            seclet_image_path = r"images/button/seclet.png"
+            seclet_image = Image.open(seclet_image_path).resize((100, 35))  # 调整尺寸
+            seclet_photo = ImageTk.PhotoImage(seclet_image)
+
+            # 使用图片创建按钮
             close_button = tk.Button(
                 detail_window,
-                text="Seclet",
+                image=seclet_photo,
                 command=lambda: self.close_detail_window(detail_window),
+                bg='black', borderwidth=0  # 设置按钮背景和边框
             )
+            close_button.image = seclet_photo  # 保持引用
             close_button.pack(pady=20)
 
     def close_detail_window(self, detail_window):
-        """关闭卡牌详细信息弹窗"""
+        """关卡牌详细信息弹窗"""
         self.detail_window_open = False  # 先重置标志位
         detail_window.destroy()
 
@@ -257,10 +337,26 @@ class TarotApp:
 
     def update_summary(self):
         """更新选择摘要"""
-        summary_text = "You have selected:\n"
+        # 清除之前的内容
+        for widget in self.summary_frame.winfo_children():
+            widget.destroy()
+
         for theme, idx in self.selected_images.items():
-            summary_text += f" - {theme} card {idx + 1}\n"
-        self.summary_label.config(text=summary_text)
+            # 加载选中卡片的正面图片
+            front_image_path = os.path.join(self.image_directory, f'{theme.lower()}_{idx + 1}.jpg')
+            if os.path.exists(front_image_path):
+                front_image = Image.open(front_image_path).resize((120, 120))
+                front_photo = ImageTk.PhotoImage(front_image)
+
+                # 显示卡片图片
+                card_label = tk.Label(self.summary_frame, image=front_photo, bg='black')
+                card_label.image = front_photo  # 保持引用
+                card_label.pack(side="left", padx=10)
+
+                # 显示卡片对应的文字
+                quote = card_data.get(theme, {}).get(idx, {}).get('quote', 'No quote available.')
+                text_label = tk.Label(self.summary_frame, text=quote, font=("Calibri", 14), wraplength=200, bg='black', fg='white')
+                text_label.pack(side="left", padx=10)
 
     def restart(self):
         """重新开始"""
@@ -271,13 +367,7 @@ class TarotApp:
         self.pages[0].pack(fill="both", expand=True)
 
     def make_rounded_corner(self, img):
-        """将图片处理为圆角"""
-        mask = Image.new("L", img.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle(
-            [(0, 0), img.size], radius=20, fill=255  # 圆角半径
-        )
-        img.putalpha(mask)
+        """返回原始图像，不进行圆角处理"""
         return img
 
     def generate_prophecy(self):
@@ -363,7 +453,7 @@ class TarotApp:
     def show_prophecy(self):
         """显示预言诗句的弹窗"""
         def get_font_with_fallback(font_name, size=14):
-            """获取字体，如果指定字体不可用则使用回退字体"""
+            """获取字体，如果指定字体不可用则使用回退体"""
             try:
                 available_fonts = tkfont.families()  # 使用正确的tkfont引用
                 
@@ -387,21 +477,39 @@ class TarotApp:
         try:
             prophecy_window = tk.Toplevel(self.root)
             prophecy_window.title("Prophecy of Memory")
-            prophecy_window.geometry("600x400")
-            
+            prophecy_window.geometry("640x700")
+            prophecy_window.config(bg='black')
+
+            # 加载并调整标题图片的尺寸
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            title_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'lmtitle.png')
+            title_image = Image.open(title_image_path).resize((400, 60))  # 调整尺寸以缩小图片
+            title_photo = ImageTk.PhotoImage(title_image)
+
+            # 使用图片创建标题标签
+            title_label = tk.Label(prophecy_window, image=title_photo, bg='black')
+            title_label.image = title_photo  # 保持引用
+            title_label.pack(pady=10)  # 添加一些垂直间距
+
             # 使用try-except包装字体设置
             try:
                 loading_font = get_font_with_fallback('Calibri')
                 loading_label = tk.Label(
                     prophecy_window, 
                     text="Generating prophecy...", 
-                    font=loading_font
+                    font=loading_font,
+                    bg='black',  # 设置背景为白色
+                    fg='whit',  # 设置文本为黑色
+                    justify='center'  # 文本居中
                 )
             except Exception as e:
                 print(f"Loading font error: {e}")  # 添加错误日志
                 loading_label = tk.Label(
                     prophecy_window, 
-                    text="Generating prophecy..."
+                    text="Generating prophecy...",
+                    bg='black',
+                    fg='white',
+                    justify='center'
                 )
             
             loading_label.pack(pady=20)
@@ -414,6 +522,17 @@ class TarotApp:
             # 创建文本显示区域
             text_frame = tk.Frame(prophecy_window)
             text_frame.pack(pady=20, expand=True, fill="both")
+
+            # 加载背景图片
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            bg_image_path = os.path.join(base_dir, '..', '..', 'images', 'bg', 'text.png')
+            bg_image = Image.open(bg_image_path)
+            bg_photo = ImageTk.PhotoImage(bg_image)
+
+            # 使用标签显示背景图片
+            bg_label = tk.Label(text_frame, image=bg_photo)
+            bg_label.image = bg_photo  # 保持引用
+            bg_label.place(relwidth=1, relheight=1)  # 调整标签大小以填充框架
             
             text_widget = tk.Text(
                 text_frame,
@@ -421,7 +540,9 @@ class TarotApp:
                 width=40,
                 height=15,
                 relief="flat",
-                borderwidth=0
+                borderwidth=0,
+                 # 设置背景为白色
+                fg='black'  # 设置文本为黑色
             )
             text_widget.pack(padx=20, expand=True, fill="both")
             
@@ -430,8 +551,8 @@ class TarotApp:
             cn_font = get_font_with_fallback('Microsoft YaHei')
             
             # 配置字体标签
-            text_widget.tag_configure("en_text", font=en_font)
-            text_widget.tag_configure("cn_text", font=cn_font)
+            text_widget.tag_configure("en_text", font=en_font, justify='center', spacing1=2, spacing3=2)  # 缩小行距
+            text_widget.tag_configure("cn_text", font=cn_font, justify='center')
             
             # 处理预言文本
             lines = prophecy_text.split('\n')
@@ -466,85 +587,47 @@ class TarotApp:
                         text_widget.insert("end", line + "\n", "en_text")
             
             # 配置不同的字体样式
-            text_widget.tag_configure("en_title", font=get_font_with_fallback('Calibri', 16))
-            text_widget.tag_configure("cn_title", font=get_font_with_fallback('Microsoft YaHei', 16))
-            text_widget.tag_configure("en_text", font=get_font_with_fallback('Calibri', 14))
-            text_widget.tag_configure("cn_text", font=get_font_with_fallback('Microsoft YaHei', 14))
+            text_widget.tag_configure("en_title", font=get_font_with_fallback('Courier New', 14), justify='center', spacing1=1, spacing3=1)
+            text_widget.tag_configure("cn_title", font=get_font_with_fallback('宋体', 14), justify='center', spacing1=1, spacing3=1)
+            text_widget.tag_configure("en_text", font=get_font_with_fallback('Courier New', 12), justify='center', spacing1=1, spacing3=1)
+            text_widget.tag_configure("cn_text", font=get_font_with_fallback('宋体', 12), justify='center', spacing1=1, spacing3=1)
             
             # 设置为只读
             text_widget.configure(state="disabled")
             
-            # 关闭按钮使用新的英文字体
+            # 加载并调整 Close 按钮图片的尺寸
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            close_image_path = os.path.join(base_dir, '..', '..', 'images', 'button', 'close.png')
+            close_image = Image.open(close_image_path).resize((75, 30))  # 调整尺寸
+            close_photo = ImageTk.PhotoImage(close_image)
+
+            # 使用图片创建关闭按钮
             close_button = tk.Button(
                 prophecy_window,
-                text="Close",
-                font=get_font_with_fallback('Calibri', 12),
-                command=prophecy_window.destroy
+                image=close_photo,
+                command=prophecy_window.destroy,
+                bg='black', borderwidth=0  # 设置按钮背景和边框
             )
+            close_button.image = close_photo  # 保持引用
             close_button.pack(pady=10)
         except Exception as e:
             print(f"Error showing prophecy: {e}")
 
-    def setup_background_music(self):
-        """设置背景音乐"""
-        try:
-            music_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'audio', 'background.mp3')
-            pygame.mixer.music.load(music_path)
-            pygame.mixer.music.set_volume(self.volume)
-            pygame.mixer.music.play(-1)  # -1表示循环播放
-            self.is_playing = True
-        except Exception as e:
-            print(f"无法加载背景音乐: {e}")
-
-    def create_volume_control(self):
-        """创建音量控制按钮"""
-        # 创建一个框架，放在主窗口的左上角
-        self.volume_frame = tk.Frame(self.root, bg='white')  # 添加背景色以便于调试
-        self.volume_frame.pack(side="top", anchor="nw", padx=10, pady=10)
-        
-        # 音量按钮
-        self.volume_button = tk.Button(
-            self.volume_frame,
-            text="🔊",
-            font=("Calibri", 12),
-            command=self.toggle_music,
-            width=2,  # 设置按钮宽度
-            height=1  # 设置按钮高度
-        )
-        self.volume_button.pack(side="left", padx=5)
-        
-        # 音量滑块
-        self.volume_slider = tk.Scale(
-            self.volume_frame,
-            from_=0,
-            to=100,
-            orient="horizontal",
-            length=100,  # 设置滑块长度
-            command=self.change_volume
-        )
-        self.volume_slider.set(self.volume * 100)
-        self.volume_slider.pack(side="left", padx=5)
-
-    def toggle_music(self):
-        """切换音乐播放状态"""
-        if self.is_playing:
-            pygame.mixer.music.pause()
-            self.volume_button.config(text="🔈")
-        else:
+    def toggle_mute(self):
+        """切换静音状态"""
+        if self.is_muted:
             pygame.mixer.music.unpause()
-            self.volume_button.config(text="🔊")
-        self.is_playing = not self.is_playing
-
-    def change_volume(self, value):
-        """调整音量"""
-        self.volume = float(value) / 100
-        pygame.mixer.music.set_volume(self.volume)
+            print("Unmuted")
+        else:
+            pygame.mixer.music.pause()
+            print("Muted")
+        self.is_muted = not self.is_muted
 
 def main():
     root = tk.Tk()
     app = TarotApp(root)
     root.mainloop()
 
-
 if __name__ == "__main__":
     main()
+
