@@ -35,7 +35,7 @@ To use the prophecy generation feature, you need to set up LM Studio:
 2. Download the Required Model
    - Open LM Studio
    - Go to the Models tab
-   - Search for "meta-llama/Llama-2-7b-chat-hf"
+   - Search for "Meta Llama 3.1 8B Instruct"
    - Download the model
 
 3. Start the Local Server
