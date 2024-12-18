@@ -65,7 +65,7 @@ class TarotApp:
 
     def play_background_music(self):
         # 加载并播放背景音乐
-        pygame.mixer.music.load(r"C:\Users\86181\Desktop\group-attempt\audio/background.mp3")
+        pygame.mixer.music.load("audio/background.mp3")
         pygame.mixer.music.play(-1)  # -1 表示循环播放
 
     def create_page(self, frame, theme, back_image_path):
