@@ -23,6 +23,7 @@ This work utilizes data from https://dementiadiaries.org/, and we appreciate the
 
 ```bash
 pip install -r requirements.txt
+python -m tkinter
 ``` 
 
 ### 2. LM Studio Setup
