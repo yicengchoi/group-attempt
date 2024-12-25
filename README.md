@@ -75,7 +75,7 @@ The prophecy generation feature requires a working LM Studio installation with a
 
 
 
-## Tarot Card Experience Guide
+## Memory Reader - Tarot Card Experience Guide
 
 Welcome to our Tarot Card Experience! This experience consists of three card draws, each corresponding to a different theme: "Emotions", "Forgot", and "Wish". We have used web scraping technology to collect relevant sentences and author information from https://dementiadiaries.org/ to provide interpretations for the tarot cards.
 
