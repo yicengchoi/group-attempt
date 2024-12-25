@@ -70,3 +70,27 @@ If you encounter issues with the prophecy generation:
 
 ## Note
 The prophecy generation feature requires a working LM Studio installation with appropriate models. If you encounter any issues, please check the LM Studio documentation or raise an issue in this repository.
+
+
+
+
+## Tarot Card Experience Guide
+
+Welcome to our Tarot Card Experience! This experience consists of three card draws, each corresponding to a different theme: "Emotions", "Forgot", and "Wish". We have used web scraping technology to collect relevant sentences and author information from https://dementiadiaries.org/ to provide interpretations for the tarot cards.
+
+### Step-by-Step Instructions
+
+1.Launch the Server: Complete the LM Studio model loading and start the server.
+2.Run the Script: Run the attempt1.py script in the default group-attempt directory.
+3.Access the Memory Reader Page: The Memory Reader page will pop up.
+4.Select a Card: Choose a card on each page and click the "seclet" button in the card interpretation pop-up window.
+5.Switch Themes: After selecting a card on one theme page, click the "next" button in the top-right corner to switch to the next theme page.
+6.Review Your Selections: After selecting cards for all three themes, review your choices on the "Your Memory Cards" page.
+7.View Your Prophecy: Click the "prophecy memory" button to view your prophecy.
+8.Restart: Click the "restart" button to start the experience again.
+
+### Important Notes
+
+Ensure that the LM Studio model has been loaded and the server has been started.
+Run the attempt1.py script in the default group-attempt directory.
+Follow the steps to select cards and switch themes.
