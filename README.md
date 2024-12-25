@@ -68,8 +68,9 @@ If you encounter issues with the prophecy generation:
 - Verify the server port (default: 1234)
 - Check the console for error messages
 
-## Note
+### Note
 The prophecy generation feature requires a working LM Studio installation with appropriate models. If you encounter any issues, please check the LM Studio documentation or raise an issue in this repository.
+
 
 
 
@@ -81,16 +82,44 @@ Welcome to our Tarot Card Experience! This experience consists of three card dra
 ### Step-by-Step Instructions
 
 1.Launch the Server: Complete the LM Studio model loading and start the server.
+![屏幕截图 2024-12-25 170000](https://github.com/user-attachments/assets/93d2bebd-6569-4f0a-bb4f-4a9f09c47d8e)
+
+
 2.Run the Script: Run the attempt1.py script in the default group-attempt directory.
+
+
 3.Access the Memory Reader Page: The Memory Reader page will pop up.
+![屏幕截图 2024-12-25 144542](https://github.com/user-attachments/assets/eaa7eb02-ddce-48ad-b17e-4e32e0c08d4a)
+
+
 4.Select a Card: Choose a card on each page and click the "seclet" button in the card interpretation pop-up window.
+![屏幕截图 2024-12-25 143446](https://github.com/user-attachments/assets/4c0456e8-0d5c-423e-bd87-7a802dff4347)
+
+
+
 5.Switch Themes: After selecting a card on one theme page, click the "next" button in the top-right corner to switch to the next theme page.
+
+
 6.Review Your Selections: After selecting cards for all three themes, review your choices on the "Your Memory Cards" page.
+![屏幕截图 2024-12-25 143756](https://github.com/user-attachments/assets/8494bb1f-3bae-4e83-883d-e95aaece2d85)
+
+
+
 7.View Your Prophecy: Click the "prophecy memory" button to view your prophecy.
+![屏幕截图 2024-12-25 143845](https://github.com/user-attachments/assets/08ddea71-1c58-49ec-82e3-5c7060c64306)
+
+
+
 8.Restart: Click the "restart" button to start the experience again.
+
+
 
 ### Important Notes
 
-Ensure that the LM Studio model has been loaded and the server has been started.
-Run the attempt1.py script in the default group-attempt directory.
-Follow the steps to select cards and switch themes.
+
+1.Ensure that the LM Studio model has been loaded and the server has been started.
+
+2.Run the attempt1.py script in the default group-attempt directory.
+
+3.Follow the steps to select cards and switch themes.
+
